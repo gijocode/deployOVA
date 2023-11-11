@@ -1,0 +1,26 @@
+{
+  "houston": {
+    "ip": "10.1.1.1",
+    "username": "Administrator@vsphere.local",
+    "pwd": "Compaq@123",
+    "gateway": "10.1.1.2",
+    "dns": "10.1.1.2",
+    "subnet": "10.1.1.2",
+    "vmn1": "10.1.1.2",
+    "vmn2": "10.1.1.2",
+    "vmn3": "10.1.1.2",
+    "datastore": "10.1.1.2"
+  },
+  "bangalore": {
+    "ip": "10.1.1.1",
+    "username": "Administrator@vsphere.local",
+    "pwd": "",
+    "gateway": "172.40.1.2",
+    "dns": "10.1.1.2",
+    "subnet": "10.1.1.2",
+    "vmn1": "10.1.1.2",
+    "vmn2": "10.1.1.2",
+    "vmn3": "10.1.1.2",
+    "datastore": "10.1.1.2"
+  }
+}
