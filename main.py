@@ -1,19 +1,30 @@
 import json
 import os
+import shutil
 import subprocess
 import sys
 import webbrowser
+from base64 import standard_b64decode, standard_b64encode
 
 import PySimpleGUI as sg
 
 bundle_dir = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
-# path_to_json = os.path.abspath(os.path.join(bundle_dir, "vcenter_envs.json"))
+home_dir = os.path.expanduser("~")
 
 ovf_tool_link = "https://developer.vmware.com/web/tool/4.6.2/ovf-tool/"
 current_envs = {}
 manage_window = None
 font = ("Courier New", 12, "underline")
+
 sg.theme("LightGrey1")
+
+if not os.path.exists(os.path.join(home_dir, "deployOVA", "vcenter_envs.json")):
+    os.makedirs(os.path.join(home_dir, "deployOVA"))
+    shutil.copy(
+        f"{bundle_dir}/vcenter_envs.json",
+        os.path.join(home_dir, "deployOVA", "vcenter_envs.json"),
+    )
+bundle_dir = os.path.join(home_dir, "deployOVA")
 
 
 def get_latest_envs():
@@ -31,7 +42,11 @@ def save_current_envs():
 def update_current_env(vc_env, values):
     current_envs[vc_env]["ip"] = values["manage_vc_ip"]
     current_envs[vc_env]["username"] = values["manage_vc_username"]
-    current_envs[vc_env]["pwd"] = values["manage_vc_pwd"]
+    current_envs[vc_env]["pwd"] = standard_b64encode(
+        values["manage_vc_pwd"].encode("utf-8")
+    ).decode("utf-8")
+    print(current_envs[vc_env]["pwd"])
+    print(standard_b64decode(current_envs[vc_env]["pwd"]))
     current_envs[vc_env]["gateway"] = values["manage_vc_gateway"]
     current_envs[vc_env]["dns"] = values["manage_vc_dns"]
     current_envs[vc_env]["subnet"] = values["manage_vc_subnet"]
