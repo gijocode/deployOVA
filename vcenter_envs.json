@@ -1,26 +1,32 @@
 {
-  "houston": {
-    "ip": "10.1.1.1",
-    "username": "Administrator@vsphere.local",
-    "pwd": "Compaq@123",
-    "gateway": "10.1.1.2",
-    "dns": "10.1.1.2",
-    "subnet": "10.1.1.2",
-    "vmn1": "10.1.1.2",
-    "vmn2": "10.1.1.2",
-    "vmn3": "10.1.1.2",
-    "datastore": "10.1.1.2"
-  },
-  "bangalore": {
-    "ip": "10.1.1.1",
-    "username": "Administrator@vsphere.local",
-    "pwd": "",
-    "gateway": "172.40.1.2",
-    "dns": "172.1.1.2",
-    "subnet": "172.1.1.2",
-    "vmn1": "172.1.1.2",
-    "vmn2": "172.1.1.2",
-    "vmn3": "172.1.1.2",
-    "datastore": "172.1.1.2"
-  }
+    "New Environment": {
+        "ip": "",
+        "username": "",
+        "pwd": "",
+        "gateway": "",
+        "dns": "",
+        "subnet": "",
+        "vmn1": "",
+        "vmn2": "",
+        "vmn3": "",
+        "datastore": "",
+        "ip_list": [
+            "123.234.345.123 myfqdn.mydomain.net"
+        ]
+    },
+    "new vcenter": {
+        "ip": "12.1.1.1",
+        "username": "Admin",
+        "pwd": "Compaq@123",
+        "gateway": "120",
+        "dns": "999",
+        "subnet": "777",
+        "vmn1": "vmn1",
+        "vmn2": "nw2",
+        "vmn3": "",
+        "datastore": "ok",
+        "ip_list": [
+            "123.234.345.123 myfqdn.mydomain.net"
+        ]
+    }
 }
