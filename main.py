@@ -14,6 +14,7 @@ home_dir = os.path.expanduser("~")
 ovf_tool_link = "https://developer.vmware.com/web/tool/4.6.2/ovf-tool/"
 current_envs = {}
 manage_window = None
+window = None
 font = ("Courier New", 12, "underline")
 
 sg.theme("LightGrey1")
@@ -83,201 +84,252 @@ def create_new_env(env_name):
     return False
 
 
-get_latest_envs()
-menu_row_layout = [
-    [
-        "vCenter Environments",
+def main_loop():
+    get_latest_envs()
+    menu_row_layout = [
         [
-            "Manage",
-            "Exit",
+            "vCenter Environments",
+            [
+                "Manage",
+                "Exit",
+            ],
         ],
-    ],
-    [
-        "Help",
         [
-            "How to use",
-            "About",
+            "Help",
+            [
+                "How to use",
+                "About",
+            ],
         ],
-    ],
-]
-vc_layout = [
-    sg.Column(
-        layout=[
-            [
-                sg.Text("vCenter Environment:"),
-                sg.Combo(
-                    list(current_envs.keys()),
-                    s=25,
-                    readonly=True,
-                    key="envs",
-                    default_value="--Select vCenter Environment--",
-                    enable_events=True,
-                ),
-            ],
-            [sg.Text("vCenter IP:"), sg.Input("", s=25, key="vc_ip")],
-            [
-                sg.Text("Username:"),
-                sg.Input("", size=25, key="vc_username"),
-            ],
-            [
-                sg.Text("Password:"),
-                sg.Input(password_char="*", size=(None, 20), key="vc_pwd"),
-            ],
-        ]
-    ),
-    sg.Column(
-        layout=[
-            [
-                sg.Text("Gateway:", size=10),
-                sg.Input("", size=(None, 20), key="vc_gateway"),
-            ],
-            [
-                sg.Text("DNS:", size=10),
-                sg.Input("", size=(None, 20), key="vc_dns"),
-            ],
-            [
-                sg.Text("Subnet:", size=10),
-                sg.Input("", size=(None, 20), key="vc_subnet"),
-            ],
-        ]
-    ),
-    sg.Column(
-        layout=[
-            [
-                sg.Text("VM-Network 1:", size=12),
-                sg.Input("", size=(None, 20), key="vc_nw1"),
-            ],
-            [
-                sg.Text("VM-Network 2:", size=12),
-                sg.Input("", size=(None, 20), key="vc_nw2"),
-            ],
-            [
-                sg.Text("VM-Network 3:", size=12),
-                sg.Input("", size=(None, 20), key="vc_nw3"),
-            ],
-            [
-                sg.Text("Datastore:", size=12),
-                sg.Input("", size=(None, 20), key="vc_storage"),
-            ],
-        ]
-    ),
-]
-vm_layout = [
-    [
+    ]
+    vc_layout = [
         sg.Column(
-            vertical_alignment="top",
             layout=[
                 [
-                    sg.Text("VM Name:", size=10),
-                    sg.Input("", size=(None, 20), key="vm_name"),
-                ],
-                [
-                    sg.Text("IP & FQDN:", size=10),
-                ],
-                [
+                    sg.Text("vCenter Environment:"),
                     sg.Combo(
-                        values=[],
-                        default_value="--Select--",
-                        size=35,
-                        auto_size_text=True,
-                        key="vm_ip_fqdn",
+                        list(current_envs.keys()),
+                        s=25,
+                        readonly=True,
+                        font="Arial 12",
+                        key="envs",
+                        default_value="--Select vCenter Environment--",
                         enable_events=True,
                     ),
                 ],
                 [
-                    sg.Checkbox(
-                        "Power On after deploying", key="vm_power", default=True
+                    sg.Text("vCenter IP:"),
+                    sg.Input("", font="Arial 12", s=25, key="vc_ip"),
+                ],
+                [
+                    sg.Text("Username:"),
+                    sg.Input("", font="Arial 12", size=25, key="vc_username"),
+                ],
+                [
+                    sg.Text("Password:"),
+                    sg.Input(
+                        password_char="*",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="vc_pwd",
                     ),
                 ],
-            ],
+            ]
         ),
         sg.Column(
             layout=[
                 [
-                    sg.Multiline(
-                        "Ping Output",
-                        expand_y=True,
-                        autoscroll=True,
-                        size=30,
-                        background_color="black",
-                        expand_x=True,
-                        text_color="white",
-                        font="monospace 10",
-                        auto_refresh=True,
-                        key="ping_output",
-                        horizontal_scroll=True,
+                    sg.Text("Gateway:", size=10),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="vc_gateway",
                     ),
                 ],
-            ],
-            vertical_alignment="top",
-            expand_y=True,
-            expand_x=True,
+                [
+                    sg.Text("DNS:", size=10),
+                    sg.Input("", size=(None, 20), font="Arial 12", key="vc_dns"),
+                ],
+                [
+                    sg.Text("Subnet:", size=10),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="vc_subnet",
+                    ),
+                ],
+            ]
         ),
         sg.Column(
             layout=[
                 [
-                    sg.Multiline(
-                        "Nslookup Output",
-                        size=30,
-                        autoscroll=True,
-                        expand_y=True,
-                        expand_x=True,
-                        background_color="black",
-                        horizontal_scroll=True,
-                        text_color="white",
-                        font="monospace 10",
-                        key="nslookup_output",
-                        auto_refresh=True,
+                    sg.Text("VM-Network 1:", size=12),
+                    sg.Input("", size=(None, 20), font="Arial 12", key="vc_nw1"),
+                ],
+                [
+                    sg.Text("VM-Network 2:", size=12),
+                    sg.Input("", size=(None, 20), font="Arial 12", key="vc_nw2"),
+                ],
+                [
+                    sg.Text("VM-Network 3:", size=12),
+                    sg.Input("", size=(None, 20), font="Arial 12", key="vc_nw3"),
+                ],
+                [
+                    sg.Text("Datastore:", size=12),
+                    sg.Input(
+                        "",
+                        font="Arial 12",
+                        size=(None, 20),
+                        key="vc_storage",
                     ),
                 ],
-            ],
-            vertical_alignment="top",
-            expand_y=True,
-            expand_x=True,
+            ]
         ),
-    ],
-]
-layout = [
-    [sg.Menu(menu_row_layout)],
-    [  # Remove this if you will package the ovftool within the exe
-        sg.Text(
-            "Before you proceed, make sure you install the ovf tool and add it to your System Path",
-            auto_size_text=True,
-        ),
-        sg.Text(
-            "VMware OVF tool",
-            tooltip=ovf_tool_link,
-            enable_events=True,
-            font=font,
-            key="-OVF-URL-",
-        ),
-    ],
-    [
-        sg.Text("Select the ova file"),
-        sg.FileBrowse("Browse", target="test", enable_events=True),
-        sg.Text("", key="test", enable_events=True),
-    ],
-    [
-        sg.Frame("vCenter where ova should be deployed:", layout=[vc_layout]),
-    ],
-    [
-        sg.Frame(
-            "VM Settings",
-            layout=vm_layout,
-            expand_x=True,
-            size=(20, 150),
-            expand_y=True,
-        ),
-    ],
-]
-window = sg.Window(
-    "Deploy OVA",
-    layout,
-    finalize=True,
-    resizable=True,
-    auto_size_text=True,
-    auto_size_buttons=True,
-)
+    ]
+    vm_layout = [
+        [
+            sg.Column(
+                vertical_alignment="top",
+                layout=[
+                    [
+                        sg.Text("VM Name:", size=10),
+                        sg.Input(
+                            "",
+                            font="Arial 12",
+                            size=(None, 20),
+                            key="vm_name",
+                        ),
+                    ],
+                    [
+                        sg.Text("IP & FQDN:", size=10),
+                    ],
+                    [
+                        sg.Combo(
+                            values=[],
+                            default_value="--Select--",
+                            size=35,
+                            font="Arial 12",
+                            auto_size_text=True,
+                            key="vm_ip_fqdn",
+                            enable_events=True,
+                        ),
+                    ],
+                    [
+                        sg.Checkbox(
+                            "Power On after deploying", key="vm_power", default=True
+                        ),
+                    ],
+                ],
+            ),
+            sg.Column(
+                layout=[
+                    [
+                        sg.Multiline(
+                            "Ping Output",
+                            expand_y=True,
+                            autoscroll=True,
+                            size=30,
+                            background_color="black",
+                            expand_x=True,
+                            text_color="white",
+                            font="Arial 12",
+                            auto_refresh=True,
+                            key="ping_output",
+                            horizontal_scroll=True,
+                        ),
+                    ],
+                ],
+                vertical_alignment="top",
+                expand_y=True,
+                expand_x=True,
+            ),
+            sg.Column(
+                layout=[
+                    [
+                        sg.Multiline(
+                            "Nslookup Output",
+                            size=30,
+                            autoscroll=True,
+                            expand_y=True,
+                            expand_x=True,
+                            background_color="black",
+                            horizontal_scroll=True,
+                            text_color="white",
+                            font="Arial 12",
+                            key="nslookup_output",
+                            auto_refresh=True,
+                        ),
+                    ],
+                ],
+                vertical_alignment="top",
+                expand_y=True,
+                expand_x=True,
+            ),
+        ],
+    ]
+    layout = [
+        [sg.Menu(menu_row_layout)],
+        [  # Remove this if you will package the ovftool within the exe
+            sg.Text(
+                "Before you proceed, make sure you install the ovf tool and add it to your System Path",
+                auto_size_text=True,
+            ),
+            sg.Text(
+                "VMware OVF tool",
+                tooltip=ovf_tool_link,
+                enable_events=True,
+                font=font,
+                key="-OVF-URL-",
+            ),
+        ],
+        [
+            sg.Text("Select the ova file"),
+            sg.FileBrowse("Browse", target="test", enable_events=True),
+            sg.Text("", key="test", enable_events=True),
+        ],
+        [
+            sg.Frame("vCenter where ova should be deployed:", layout=[vc_layout]),
+        ],
+        [
+            sg.Frame(
+                "VM Settings",
+                layout=vm_layout,
+                expand_x=True,
+                size=(20, 150),
+                expand_y=True,
+            ),
+        ],
+    ]
+    global window
+    window = sg.Window(
+        "Deploy OVA",
+        layout,
+        finalize=True,
+        resizable=True,
+        auto_size_text=True,
+        auto_size_buttons=True,
+    )
+
+    while True:
+        event, values = window.read()
+        print(event, values)
+        if event == sg.WINDOW_CLOSED:
+            break
+        elif event == "Manage":
+            open_window()
+        elif event == "envs":
+            vCenter_Environment = values["envs"]
+            change_values(vCenter_Environment)
+        elif event == "vm_ip_fqdn":
+            ip, fqdn = values["vm_ip_fqdn"].split(" ")
+            perform_ip_checks(ip, fqdn)
+        elif event.startswith("-OVF-URL-"):
+            webbrowser.open(ovf_tool_link)
+        print(event, values)
+
+    window.close()
 
 
 def open_window():
@@ -295,7 +347,7 @@ def open_window():
                     sg.Multiline(
                         default_text="123.234.345.123 myfqdn.mydomain.net",
                         size=(None, 15),
-                        font="monospace 12",
+                        font="Courier 12",
                         key="manage_vc_iplist",
                     ),
                 ],
@@ -308,15 +360,25 @@ def open_window():
             layout=[
                 [
                     sg.Text("vCenter IP:"),
-                    sg.Input(size=20, key="manage_vc_ip"),
+                    sg.Input(size=20, font="Arial 12", key="manage_vc_ip"),
                 ],
                 [
                     sg.Text("Username:"),
-                    sg.Input("", size=25, key="manage_vc_username"),
+                    sg.Input(
+                        "",
+                        size=25,
+                        font="Arial 12",
+                        key="manage_vc_username",
+                    ),
                 ],
                 [
                     sg.Text("Password:"),
-                    sg.Input(password_char="*", size=(None, 20), key="manage_vc_pwd"),
+                    sg.Input(
+                        password_char="*",
+                        font="Arial 12",
+                        size=(None, 20),
+                        key="manage_vc_pwd",
+                    ),
                 ],
             ]
         ),
@@ -324,15 +386,30 @@ def open_window():
             layout=[
                 [
                     sg.Text("Gateway:", size=10),
-                    sg.Input("", size=(None, 20), key="manage_vc_gateway"),
+                    sg.Input(
+                        "",
+                        font="Arial 12",
+                        size=(None, 20),
+                        key="manage_vc_gateway",
+                    ),
                 ],
                 [
                     sg.Text("DNS:", size=10),
-                    sg.Input("", size=(None, 20), key="manage_vc_dns"),
+                    sg.Input(
+                        "",
+                        font="Arial 12",
+                        size=(None, 20),
+                        key="manage_vc_dns",
+                    ),
                 ],
                 [
                     sg.Text("Subnet:", size=10),
-                    sg.Input("", size=(None, 20), key="manage_vc_subnet"),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="manage_vc_subnet",
+                    ),
                 ],
             ]
         ),
@@ -340,19 +417,39 @@ def open_window():
             layout=[
                 [
                     sg.Text("VM-Network 1:", size=13),
-                    sg.Input("", size=(None, 20), key="manage_vc_nw1"),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="manage_vc_nw1",
+                    ),
                 ],
                 [
                     sg.Text("VM-Network 2:", size=13),
-                    sg.Input("", size=(None, 20), key="manage_vc_nw2"),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="manage_vc_nw2",
+                    ),
                 ],
                 [
                     sg.Text("VM-Network 3:", size=13),
-                    sg.Input("", size=(None, 20), key="manage_vc_nw3"),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="manage_vc_nw3",
+                    ),
                 ],
                 [
                     sg.Text("Datastore", size=10),
-                    sg.Input("", size=(None, 20), key="manage_vc_storage"),
+                    sg.Input(
+                        "",
+                        size=(None, 20),
+                        font="Arial 12",
+                        key="manage_vc_storage",
+                    ),
                 ],
             ]
         ),
@@ -367,6 +464,7 @@ def open_window():
                 default_value="--Select vCenter Environment--",
                 size=30,
                 enable_events=True,
+                font="Arial 12",
                 key="manage_env",
             ),
             sg.Text("OR"),
@@ -503,21 +601,5 @@ def perform_ip_checks(ip, fqdn):
     nslookup_op_element.update(nslookup_str + nslookup.stdout)
 
 
-while True:
-    event, values = window.read()
-    print(event, values)
-    if event == sg.WINDOW_CLOSED:
-        break
-    elif event == "Manage":
-        open_window()
-    elif event == "envs":
-        vCenter_Environment = values["envs"]
-        change_values(vCenter_Environment)
-    elif event == "vm_ip_fqdn":
-        ip, fqdn = values["vm_ip_fqdn"].split(" ")
-        perform_ip_checks(ip, fqdn)
-    elif event.startswith("-OVF-URL-"):
-        webbrowser.open(ovf_tool_link)
-    print(event, values)
-
-window.close()
+if __name__ == "__main__":
+    main_loop()
